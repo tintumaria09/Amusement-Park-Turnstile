@@ -38,7 +38,7 @@ def run_sweeper():
           print(f"[Sweeper] successfully deleted stale record from DynamoDB")
 
       else:
-        print("All tasks are alive in this iteration.", end="", flush=True)
+        print("\nAll tasks are alive in this iteration.", end="", flush=True)
     except Exception as e:
       print(f"\n[Sweeper Error] {e}")
 

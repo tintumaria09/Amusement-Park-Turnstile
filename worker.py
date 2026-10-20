@@ -168,23 +168,31 @@ while True:
         processing_time = random.randint(8, 25)
         print(f"Processing turnstile scan for ticket {ticket_id}...")
         time.sleep(processing_time)
+        
+        # Delete the item from DynamoDB after processing finishes successfully:
+        table.delete_item(Key={"ticket_id": ticket_id})
+        # Delete the message so it's removed from the queue permanently
+        message.delete()
+        print("Message processed, heartbeat stopped and deleted from queue successfully.")
+
+        
+        
       finally:
         # Cleanly stop the background thread before finishing up
         stop_heartbeat.set()
         # Wait for the background thread to safely wrap up and shut down
         heartbeat_thread.join()
 
+        # Update DynamoDB record status to "completed"
+
+     
 
 
 
 
 
-      # TODO (Chaos Test): Uncomment the line below to simulate a worker crash and verify SQS message redelivery & DynamoDB conditional check idempotency.
-      # raise Exception("Simulated worker failure")
 
-      # Delete the message so it's removed from the queue permanently
-      message.delete()
-      print("Message processed, heartbeat stopped and deleted from queue successfully.")
+
 
     except json.JSONDecodeError:
       print(f"Error parsing message body: {message.body}")
